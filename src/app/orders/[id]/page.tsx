@@ -23,7 +23,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       <div className="card"><span className="badge">Montant</span><div className="stat" style={{marginTop:12}}>{new Intl.NumberFormat("fr-FR").format(order.total_amount)}</div><p>{order.currency}</p></div>
       <div className="card"><span className="badge">Livraison</span><h2 style={{fontSize:24,marginTop:12}}>{order.delivery_city || "À définir"}</h2><p>{order.notes || "Aucune note"}</p></div>
     </div>
-    {buying && order.status === "pending" && <PayButton orderId={order.id} />}
+    {buying && order.status === "confirmed" && <PayButton orderId={order.id} />}
+    {buying && order.status === "pending" && <div className="card" style={{marginTop:20}}><h2 style={{fontSize:24}}>En attente de confirmation</h2><p>Le vendeur doit confirmer la disponibilité avant que le paiement puisse être préparé.</p></div>}
     <OrderActions orderId={order.id} status={order.status} role={buying ? "buyer" : "seller"} />
     {events && events.length > 0 && <section style={{marginTop:28}}><h2 style={{fontSize:28}}>Historique</h2><div className="card" style={{marginTop:12}}>{events.map((event) => <div key={event.id} style={{padding:"12px 0",borderBottom:"1px solid var(--border)"}}><strong>{event.event_type}</strong><p style={{margin:4}}>{event.from_status ? `${event.from_status} → ` : ""}{event.to_status} · {new Date(event.created_at).toLocaleString("fr-FR")}</p></div>)}</div></section>}
   </main>;
