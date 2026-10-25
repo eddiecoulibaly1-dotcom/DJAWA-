@@ -22,7 +22,7 @@ export type Database = {
       payment_intents: { Row: { id: string; order_id: string; payer_id: string; amount: number; currency: string; provider: string | null; status: "initiated" | "pending" | "success" | "failed" | "reversed" | "refunded" | "unknown"; provider_reference: string | null; provider_payment_request_id: string | null; provider_transaction_id: string | null; failure_reason: string | null; idempotency_key: string; created_at: string; updated_at: string }; Insert: Partial<Database["public"]["Tables"]["payment_intents"]["Row"]> & { order_id: string; payer_id: string; amount: number; idempotency_key: string }; Update: Partial<Database["public"]["Tables"]["payment_intents"]["Row"]>; Relationships: [] };
       payment_webhook_events: { Row: { id: string; provider: string; provider_event_id: string; event_type: string; reference: string | null; payload: Json; received_at: string; processed_at: string | null; created_at: string }; Insert: Partial<Database["public"]["Tables"]["payment_webhook_events"]["Row"]> & { provider: string; provider_event_id: string; event_type: string }; Update: Partial<Database["public"]["Tables"]["payment_webhook_events"]["Row"]>; Relationships: [] };
     };
-    Views: {};
+    Views: Record<string, never>;
     Functions: {
       current_user_role: { Args: never; Returns: Database["public"]["Tables"]["profiles"]["Row"]["role"] };
       published_products_count: { Args: never; Returns: number };
@@ -36,6 +36,6 @@ export type Database = {
       mark_order_delivered: { Args: { p_order_id: string }; Returns: Database["public"]["Tables"]["orders"]["Row"] };
     };
     Enums: { listing_status: "draft" | "published" | "paused" | "sold_out" | "archived"; order_item_status: "pending" | "accepted" | "rejected" | "fulfilled"; order_status: "pending" | "confirmed" | "processing" | "ready" | "delivered" | "cancelled" | "disputed"; payment_status: "initiated" | "pending" | "success" | "failed" | "reversed" | "refunded" | "unknown"; user_role: "producer" | "trader" | "cooperative" | "agent" | "admin" };
-    CompositeTypes: {};
+    CompositeTypes: Record<string, never>;
   };
 };
