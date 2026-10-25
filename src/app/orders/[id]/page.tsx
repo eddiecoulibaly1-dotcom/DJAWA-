@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import PayButton from "@/components/PayButton";
+import PaymentStatus from "@/components/PaymentStatus";
 import OrderActions from "@/components/OrderActions";
 
-export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function OrderDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ payment?: "success" | "error" }> }) {
   const { id } = await params;
+  const { payment: callback } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
@@ -14,6 +16,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const { data: item } = await supabase.from("order_items").select("quantity,unit_price,status,product_id").eq("order_id", id).limit(1).single();
   const { data: product } = item ? await supabase.from("products").select("name,unit,category").eq("id", item.product_id).single() : { data: null };
   const { data: events } = await supabase.from("order_events").select("id,from_status,to_status,event_type,metadata,created_at").eq("order_id", id).order("created_at", { ascending: false }).limit(10);
+  const { data: paymentIntent } = order.buyer_id === user.id
+    ? await supabase.from("payment_intents").select("status,provider,failure_reason,provider_payment_request_id,updated_at").eq("order_id", id).eq("payer_id", user.id).order("created_at", { ascending: false }).limit(1).maybeSingle()
+    : { data: null };
   const buying = order.buyer_id === user.id;
   return <main className="container section">
     <Link href="/orders" className="btn secondary">← Mes commandes</Link>
@@ -23,7 +28,8 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       <div className="card"><span className="badge">Montant</span><div className="stat" style={{marginTop:12}}>{new Intl.NumberFormat("fr-FR").format(order.total_amount)}</div><p>{order.currency}</p></div>
       <div className="card"><span className="badge">Livraison</span><h2 style={{fontSize:24,marginTop:12}}>{order.delivery_city || "À définir"}</h2><p>{order.notes || "Aucune note"}</p></div>
     </div>
-    {buying && order.status === "confirmed" && <PayButton orderId={order.id} />}
+    {buying && <PaymentStatus payment={paymentIntent} callback={callback} />}
+    {buying && order.status === "confirmed" && paymentIntent?.status !== "success" && <PayButton orderId={order.id} />}
     {buying && order.status === "pending" && <div className="card" style={{marginTop:20}}><h2 style={{fontSize:24}}>En attente de confirmation</h2><p>Le vendeur doit confirmer la disponibilité avant que le paiement puisse être préparé.</p></div>}
     <OrderActions orderId={order.id} status={order.status} role={buying ? "buyer" : "seller"} />
     {events && events.length > 0 && <section style={{marginTop:28}}><h2 style={{fontSize:28}}>Historique</h2><div className="card" style={{marginTop:12}}>{events.map((event) => <div key={event.id} style={{padding:"12px 0",borderBottom:"1px solid var(--border)"}}><strong>{event.event_type}</strong><p style={{margin:4}}>{event.from_status ? `${event.from_status} → ` : ""}{event.to_status} · {new Date(event.created_at).toLocaleString("fr-FR")}</p></div>)}</div></section>}
