@@ -45,7 +45,7 @@ export default function PayButton({ orderId }: Props) {
   return <div className="card" style={{marginTop:20}}>
     <span className="badge">DJAWA Pay</span>
     <h2 style={{fontSize:24,marginTop:12}}>Payer la commande</h2>
-    <p>Le paiement est traité par Jèko. La commande ne sera considérée comme payée qu'après confirmation serveur.</p>
+    <p>Le paiement est traité par Jèko. La commande ne sera considérée comme payée qu&apos;après confirmation serveur.</p>
     {error && <div className="error">{error}</div>}
     <label style={{display:"block",margin:"14px 0 8px"}}>Moyen de paiement</label>
     <select value={method} onChange={(e) => setMethod(e.target.value as typeof method)} disabled={loading} style={{width:"100%",padding:12,borderRadius:8}}>
