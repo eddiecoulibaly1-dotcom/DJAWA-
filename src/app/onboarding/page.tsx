@@ -20,7 +20,7 @@ export default function OnboardingPage() {
     {error && <div className="error">{error}</div>}
     <form onSubmit={submit}>
       <div className="field"><label>Je suis</label><select value={role} onChange={e=>setRole(e.target.value as "producer"|"trader")}><option value="producer">Producteur</option><option value="trader">Commerçant / acheteur</option></select></div>
-      <div className="field"><label>Nom de l'activité</label><input value={businessName} onChange={e=>setBusinessName(e.target.value)} placeholder="Ex. Ferme Coulibaly" /></div>
+      <div className="field"><label>Nom de l&apos;activité</label><input value={businessName} onChange={e=>setBusinessName(e.target.value)} placeholder="Ex. Ferme Coulibaly" /></div>
       <div className="field"><label>Ville</label><input value={city} onChange={e=>setCity(e.target.value)} placeholder="Ex. Korhogo" /></div>
       <button className="btn primary" disabled={loading}>{loading ? "Enregistrement…" : "Continuer"}</button>
     </form>
